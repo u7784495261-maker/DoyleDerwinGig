@@ -36,7 +36,7 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .focus .ball{width:40px;height:40px;border-radius:12px;background:#d7b45b;color:#07100b;display:grid;place-items:center;font-size:20px}.focus b{font-size:12px}.focus small{display:block;color:#b8ad8b;margin-top:3px;font-size:10px}
 .card{margin:0 16px 14px;background:linear-gradient(145deg,#111a14,#0b110d);border:1px solid var(--line);border-radius:19px;overflow:hidden;box-shadow:0 16px 45px rgba(0,0,0,.18)}
 .cardhead{padding:14px 15px;display:flex;justify-content:space-between;align-items:center}.cardhead h2{margin:0;font-size:15px}.monthnav{display:flex;gap:5px}.monthnav button{width:32px;height:32px;padding:0;border-radius:9px;background:#18231b;border:1px solid #2c4033;color:#fff}
-.cal{padding:0 9px 12px}.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dow div{text-align:center;color:#68766d;font-size:9px;font-weight:900;padding:5px 0}.day{min-height:63px;border:1px solid #202c24;background:#0d1410;border-radius:10px;padding:5px;position:relative;cursor:pointer}.day.weekend{background:#111a14}.day.muted{opacity:.2}.day .num{font-size:10px;color:#91a097;font-weight:800}.dotrow{display:flex;gap:3px;margin-top:7px;flex-wrap:wrap}.dot{width:6px;height:6px;border-radius:50%}.dot.free{background:var(--green)}.dot.busy{background:var(--red)}.dot.gig{background:var(--gold)}.day.gigable{border-color:#b99543;background:linear-gradient(145deg,#183522,#0e1711);box-shadow:inset 0 0 0 1px rgba(215,180,91,.16)}.day.hasgig:after{content:"GIG";position:absolute;right:5px;bottom:5px;color:#efd98e;font-size:7px;font-weight:950;letter-spacing:.08em}.day.selected{outline:2px solid var(--green);outline-offset:1px}
+.cal{padding:0 9px 12px}.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dow div{text-align:center;color:#68766d;font-size:9px;font-weight:900;padding:5px 0}.day{min-height:63px;border:1px solid #202c24;background:#0d1410;border-radius:10px;padding:5px;position:relative;cursor:pointer}.day.weekend{background:#111a14}.day.muted{opacity:.2}.day .num{font-size:10px;color:#91a097;font-weight:800}.nextam{margin-top:5px;padding-top:4px;border-top:1px solid #26352b;font-size:6px;line-height:1.35;color:#aebbb2;font-weight:800;letter-spacing:.01em}.nextam b{color:#e8d38f}.nextam .work{color:#ffcbc6}.dotrow{display:flex;gap:3px;margin-top:7px;flex-wrap:wrap}.dot{width:6px;height:6px;border-radius:50%}.dot.free{background:var(--green)}.dot.busy{background:var(--red)}.dot.gig{background:var(--gold)}.day.gigable{border-color:#b99543;background:linear-gradient(145deg,#183522,#0e1711);box-shadow:inset 0 0 0 1px rgba(215,180,91,.16)}.day.hasgig:after{content:"GIG";position:absolute;right:5px;bottom:5px;color:#efd98e;font-size:7px;font-weight:950;letter-spacing:.08em}.day.selected{outline:2px solid var(--green);outline-offset:1px}
 .day.gigable:before{content:"FREE";position:absolute;right:5px;bottom:5px;color:#7ff0a7;font-size:7px;font-weight:950;letter-spacing:.08em}
 .day.hasgig:before{content:"";display:none}
 .day.hasgig:after{content:"GIG";position:absolute;right:5px;bottom:5px;color:#efd98e;font-size:7px;font-weight:950;letter-spacing:.08em}
@@ -46,7 +46,7 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .gigcard{padding:15px}.gighero{height:115px;border-radius:14px;overflow:hidden;position:relative}.gighero img{width:100%;height:100%;object-fit:cover;filter:brightness(.65)}.gighero .gtext{position:absolute;left:13px;bottom:11px}.gtext .pill{display:inline-block;background:#d7b45b;color:#10150e;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:950}.gtext h3{margin:7px 0 0;font-size:19px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.meta div{background:#131c16;border:1px solid #25342b;border-radius:11px;padding:10px;font-size:10px;color:#aeb9b1}.meta b{display:block;color:#f1ebda;font-size:11px;margin-bottom:2px}
 .fab{position:fixed;right:calc(50% - 230px);bottom:78px;width:54px;height:54px;border-radius:50%;border:1px solid #75df9c;background:#1c9b51;color:#fff;font-size:28px;box-shadow:0 12px 35px rgba(0,0,0,.4)}@media(max-width:520px){.fab{right:18px}}
 .bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);height:68px;background:rgba(7,11,9,.95);backdrop-filter:blur(18px);border-top:1px solid #25332a;display:grid;grid-template-columns:repeat(4,1fr);z-index:10}.bottom button{border:0;background:transparent;color:#718078;font-size:9px;font-weight:800}.bottom button.active{color:#6be594}.bottom i{display:block;font-style:normal;font-size:19px;margin-bottom:2px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:30;display:none;align-items:flex-end}.modal.open{display:flex}.sheet{width:min(520px,100%);margin:auto;background:#0d1510;border:1px solid #35493a;border-bottom:0;border-radius:23px 23px 0 0;padding:17px;max-height:90vh;overflow:auto}.sheet h2{margin:0;font-size:19px}.hint{color:#829087;font-size:10px;margin:4px 0 14px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}label{font-size:10px;color:#aebbb2;font-weight:800;display:block;margin-bottom:5px}input,select,textarea{width:100%;padding:11px;border-radius:11px;border:1px solid #314337;background:#142019;color:#fff}textarea{min-height:74px}.actions{display:flex;gap:7px;margin-top:12px}.actions button{flex:1;padding:12px;border-radius:11px;border:1px solid #35493a;background:#18251c;color:#fff;font-weight:850}.actions .save{background:#21663b;border-color:#4f9d67}.actions .danger{background:#4a2528;border-color:#69373b}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:30;display:none;align-items:flex-end}.modal.open{display:flex}.sheet{width:min(520px,100%);margin:auto;background:#0d1510;border:1px solid #35493a;border-bottom:0;border-radius:23px 23px 0 0;padding:17px;max-height:90vh;overflow:auto}.sheet h2{margin:0;font-size:19px}.hint{color:#829087;font-size:10px;margin:4px 0 14px}.nextmorning{background:#121d16;border:1px solid #304438;border-radius:12px;padding:10px 11px;margin:0 0 12px;color:#aebbb2;font-size:10px;line-height:1.45}.nextmorning strong{color:#f0e7cc}.nextmorning .work{color:#ffcbc6;font-weight:900}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}label{font-size:10px;color:#aebbb2;font-weight:800;display:block;margin-bottom:5px}input,select,textarea{width:100%;padding:11px;border-radius:11px;border:1px solid #314337;background:#142019;color:#fff}textarea{min-height:74px}.actions{display:flex;gap:7px;margin-top:12px}.actions button{flex:1;padding:12px;border-radius:11px;border:1px solid #35493a;background:#18251c;color:#fff;font-weight:850}.actions .save{background:#21663b;border-color:#4f9d67}.actions .danger{background:#4a2528;border-color:#69373b}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:78px;background:#e6d18c;color:#0a100c;padding:9px 13px;border-radius:999px;font-size:10px;font-weight:900;z-index:40;display:none}
 @media(min-width:521px){body{padding:20px 0}.app{border:1px solid #1c2921;border-radius:25px;overflow:hidden;background:#07100b}.hero{height:380px}}
 </style>
@@ -94,6 +94,21 @@ function aCStatus(w,d){
  if(e==="leave")return "LEAVE"; if(e==="available")return "AVAILABLE"; if(e==="night")return "NIGHT"; return base;
 }
 function freeAfter6(s){return s!=="NIGHT" && s!=="LEAVE"}
+function statusShort(s){
+ if(s==="DAY")return "DAY";
+ if(s==="NIGHT")return "NIGHT→09";
+ if(s==="LEAVE")return "OFF/LEAVE";
+ if(s==="AVAILABLE")return "FREE";
+ return "OFF";
+}
+function nextMorningHtml(date){
+ const d=new Date(date+"T12:00:00");
+ d.setDate(d.getDate()+1);
+ const dayName=d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"});
+ const a=aCStatus("A",d), c=aCStatus("C",d);
+ const cls=x=>x==="DAY"||x==="NIGHT"?"work":"";
+ return `<div class="nextmorning"><strong>☀️ Next morning — ${dayName}</strong><br>A: <span class="${cls(a)}">${statusShort(a)}</span> &nbsp; • &nbsp; C: <span class="${cls(c)}">${statusShort(c)}</span></div>`;
+}
 function gigable(d){const wd=d.getDay(); if(wd!==5&&wd!==6)return false; return freeAfter6(aCStatus("A",d))&&freeAfter6(aCStatus("C",d))}
 function escape(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function render(){
@@ -103,20 +118,23 @@ function render(){
 }
 function renderCalendar(c){
  const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;
- let s=`<div class="focus"><div class="ball">🎻</div><div><b>Weekend gig window</b><small>Green = A + C both free after 18:00 • gold = gig booked</small></div></div>
+ let s=`<div class="focus"><div class="ball">🎻</div><div><b>Weekend gig window</b><small>Green = A + C both free after 18:00 • gold = gig booked • next AM shows who is working</small></div></div>
  <section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
  for(let i=0;i<total;i++){let n=i-start+1;if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}
   const d=new Date(y,m,n), keyd=k(d), gig=data.gigs[keyd], weekend=d.getDay()===5||d.getDay()===6;
+  const next=new Date(d); next.setDate(next.getDate()+1);
+  const nextA=aCStatus("A",next), nextC=aCStatus("C",next);
+  const nextLine=weekend?`<div class="nextam"><b>AM +1</b> A ${statusShort(nextA)} · C ${statusShort(nextC)}</div>`:"";
   s+=`<div class="day ${weekend?"weekend":""} ${gigable(d)?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')"><div class="num">${n}</div><div class="dotrow">
    <span class="dot ${freeAfter6(aCStatus("A",d))?"free":"busy"}"></span><span class="dot ${freeAfter6(aCStatus("C",d))?"free":"busy"}"></span>${gig?'<span class="dot gig"></span>':""}
-  </div></div>`;
+  </div>${nextLine}</div>`;
  }
- s+=`</div></div><div class="legend"><span><i class="dot free"></i>A/C free after 6</span><span><i class="dot gig"></i>Gig booked</span><span><i class="dot busy"></i>Unavailable</span></div></section>`;
+ s+=`</div></div><div class="legend"><span><i class="dot free"></i>A/C free after 6</span><span><i class="dot gig"></i>Gig booked</span><span><i class="dot busy"></i>Unavailable</span><span>AM +1 = next morning</span></div></section>`;
  const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);
  if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🎻 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
  c.innerHTML=s;
 }
-function gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
+function gigMinifunction gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
 function renderGigs(c){let entries=Object.entries(data.gigs).sort();let s=`<section class="card"><div class="cardhead"><h2>🎻 The Pintmen gigs</h2><button class="iconbtn" onclick="openNew('gig')">+</button></div>`;if(!entries.length)s+=`<div class="list"><div class="sub">No gigs added yet. Tap + to add the first one.</div></div>`;else entries.forEach(([d,g])=>s+=gigMini(d,g));s+=`</section>`;c.innerHTML=s}
 function renderAvailability(c){
  let d=new Date(); let rows="";
@@ -131,12 +149,16 @@ function openDate(date){
 }
 function openGig(date){openNew("gig",date)}
 function openNew(type,date){
- editKey=null;document.getElementById("modalTitle").textContent=type==="gig"?"Add Pintmen gig":"Add availability";
- document.getElementById("date").value=date||k(view);document.getElementById("type").value=type;
- document.getElementById("gigName").value=data.gigs[date||k(view)]?.name||"";
- document.getElementById("venue").value=data.gigs[date||k(view)]?.venue||"";
- document.getElementById("time").value=data.gigs[date||k(view)]?.time||"";
- document.getElementById("notes").value=data.gigs[date||k(view)]?.notes||"";
+ editKey=null;const chosen=date||k(view);
+ document.getElementById("modalTitle").textContent=type==="gig"?"Add Pintmen gig":"Add availability";
+ document.getElementById("date").value=chosen;document.getElementById("type").value=type;
+ document.getElementById("gigName").value=data.gigs[chosen]?.name||"";
+ document.getElementById("venue").value=data.gigs[chosen]?.venue||"";
+ document.getElementById("time").value=data.gigs[chosen]?.time||"";
+ document.getElementById("notes").value=data.gigs[chosen]?.notes||"";
+ let nm=document.getElementById("nextMorningInfo");
+ if(!nm){nm=document.createElement("div");nm.id="nextMorningInfo";document.querySelector("#form .hint").after(nm)}
+ nm.innerHTML=nextMorningHtml(chosen);
  document.getElementById("modal").classList.add("open")
 }
 document.getElementById("form").onsubmit=e=>{e.preventDefault();const date=document.getElementById("date").value,type=document.getElementById("type").value;if(!date)return;
