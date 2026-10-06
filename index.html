@@ -107,7 +107,7 @@ function aCStatus(w,d){
 function freeAfter6(s){return s!=="NIGHT" && s!=="LEAVE"}
 function statusShort(s){
  if(s==="DAY")return "DAY";
- if(s==="NIGHT")return "NIGHT→09";
+ if(s==="NIGHT")return "NIGHT";
  if(s==="LEAVE")return "OFF/LEAVE";
  if(s==="AVAILABLE")return "FREE";
  return "OFF";
@@ -129,18 +129,15 @@ function render(){
 }
 function renderCalendar(c){
  const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;
- let s=`<div class="focus"><div class="ball">🎻</div><div><b>Weekend gig window</b><small>Green = A + C both free after 18:00 • gold = gig booked • next AM shows who is working</small></div></div>
+ let s=`<div class="focus"><div class="ball">🎻</div><div><b>Weekend gig window</b><small>Green = A + C both free after 18:00 • gold = gig booked • tap a date for next-morning work details</small></div></div>
  <section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
  for(let i=0;i<total;i++){let n=i-start+1;if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}
   const d=new Date(y,m,n), keyd=k(d), gig=data.gigs[keyd], weekend=d.getDay()===5||d.getDay()===6;
-  const next=new Date(d); next.setDate(next.getDate()+1);
-  const nextA=aCStatus("A",next), nextC=aCStatus("C",next);
-  const nextLine=weekend?`<div class="nextam"><b>AM +1</b> A ${statusShort(nextA)} · C ${statusShort(nextC)}</div>`:"";
   s+=`<div class="day ${weekend?"weekend":""} ${gigable(d)?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')"><div class="num">${n}</div><div class="dotrow">
    <span class="dot ${freeAfter6(aCStatus("A",d))?"free":"busy"}"></span><span class="dot ${freeAfter6(aCStatus("C",d))?"free":"busy"}"></span>${gig?'<span class="dot gig"></span>':""}
-  </div>${nextLine}</div>`;
+  </div></div>`;
  }
- s+=`</div></div><div class="legend"><span><i class="dot free"></i>A/C free after 6</span><span><i class="dot gig"></i>Gig booked</span><span><i class="dot busy"></i>Unavailable</span><span>AM +1 = next morning</span></div></section>`;
+ s+=`</div></div><div class="legend"><span><i class="dot free"></i>A/C free after 6</span><span><i class="dot gig"></i>Gig booked</span><span><i class="dot busy"></i>Unavailable</span><span>Tap a date for next morning</span></div></section>`;
  const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);
  if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🎻 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
  c.innerHTML=s;
