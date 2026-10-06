@@ -18,7 +18,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="The Pintmen">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
 <title>The Pintmen — Gig Planner</title>
 <style>
@@ -47,11 +47,17 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .focus .ball{width:40px;height:40px;border-radius:12px;background:#d7b45b;color:#07100b;display:grid;place-items:center;font-size:20px}.focus b{font-size:12px}.focus small{display:block;color:#b8ad8b;margin-top:3px;font-size:10px}
 .card{margin:0 16px 14px;background:linear-gradient(145deg,#111a14,#0b110d);border:1px solid var(--line);border-radius:19px;overflow:hidden;box-shadow:0 16px 45px rgba(0,0,0,.18)}
 .cardhead{padding:14px 15px;display:flex;justify-content:space-between;align-items:center}.cardhead h2{margin:0;font-size:15px}.monthnav{display:flex;gap:5px}.monthnav button{width:32px;height:32px;padding:0;border-radius:9px;background:#18231b;border:1px solid #2c4033;color:#fff}
-.cal{padding:0 9px 12px}.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dow div{text-align:center;color:#68766d;font-size:9px;font-weight:900;padding:5px 0}.day{min-height:63px;border:1px solid #202c24;background:#0d1410;border-radius:10px;padding:5px;position:relative;cursor:pointer}.day.weekend{background:#111a14}.day.muted{opacity:.2}.day .num{font-size:10px;color:#91a097;font-weight:800}.nextam{margin-top:5px;padding-top:4px;border-top:1px solid #26352b;font-size:6px;line-height:1.35;color:#aebbb2;font-weight:800;letter-spacing:.01em}.nextam b{color:#e8d38f}.nextam .work{color:#ffcbc6}.dotrow{display:flex;gap:3px;margin-top:7px;flex-wrap:wrap}.dot{width:6px;height:6px;border-radius:50%}.dot.free{background:var(--green)}.dot.busy{background:var(--red)}.dot.gig{background:var(--gold)}.day.gigable{border-color:#b99543;background:linear-gradient(145deg,#183522,#0e1711);box-shadow:inset 0 0 0 1px rgba(215,180,91,.16)}.day.hasgig:after{content:"GIG";position:absolute;right:5px;bottom:5px;color:#efd98e;font-size:7px;font-weight:950;letter-spacing:.08em}.day.selected{outline:2px solid var(--green);outline-offset:1px}
-.day.gigable:before{content:"FREE";position:absolute;right:5px;bottom:5px;color:#7ff0a7;font-size:7px;font-weight:950;letter-spacing:.08em}
-.day.hasgig:before{content:"";display:none}
-.day.hasgig:after{content:"GIG";position:absolute;right:5px;bottom:5px;color:#efd98e;font-size:7px;font-weight:950;letter-spacing:.08em}
-
+.cal{padding:0 9px 12px}.dow,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.dow div{text-align:center;color:#68766d;font-size:9px;font-weight:900;padding:5px 0}.day{min-height:63px;border:1px solid #202c24;background:#0d1410;border-radius:10px;padding:5px;position:relative;cursor:pointer}.day.weekend{background:#111a14}.day.muted{opacity:.2}.day .num{font-size:10px;color:#91a097;font-weight:800}.nextam{margin-top:5px;padding-top:4px;border-top:1px solid #26352b;font-size:6px;line-height:1.35;color:#aebbb2;font-weight:800;letter-spacing:.01em}.nextam b{color:#e8d38f}.nextam .work{color:#ffcbc6}.day{position:relative;min-height:88px;padding:9px 8px 8px;border:1px solid #26352d;border-radius:14px;background:linear-gradient(145deg,#0f1712,#0a100d);overflow:hidden}
+.day.weekend{background:linear-gradient(145deg,#101a14,#0a100d)}
+.day.gigable{border-color:#2ed879;background:linear-gradient(145deg,#123d24,#0b1710);box-shadow:inset 0 0 0 1px rgba(46,216,121,.14),0 5px 18px rgba(15,106,56,.18)}
+.day.hasgig{border-color:var(--gold);box-shadow:inset 0 0 0 1px rgba(215,180,91,.18)}
+.shiftlines{margin-top:7px;display:grid;gap:4px}
+.shiftline{font-size:8px;line-height:1.2;font-weight:850;letter-spacing:.01em;color:#d8e0da}
+.shiftline b{color:#d7b45b}
+.shiftline .night{color:#ffcbc6}
+.shiftline .off{color:#9ff1b8}
+.availtag{position:absolute;right:6px;bottom:6px;background:#25c96d;color:#061109;border-radius:999px;padding:3px 6px;font-size:6px;font-weight:950;letter-spacing:.08em}
+.gigtag{position:absolute;right:6px;bottom:6px;background:#d7b45b;color:#10150e;border-radius:999px;padding:3px 6px;font-size:6px;font-weight:950;letter-spacing:.08em}
 .legend{display:flex;gap:9px;padding:0 15px 13px;flex-wrap:wrap}.legend span{font-size:9px;color:#9aa89f;display:flex;align-items:center;gap:4px}
 .list{padding:0 15px 15px}.member{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #202b24}.member:first-child{border-top:0}.face{width:34px;height:34px;border-radius:50%;background:#1b3325;border:1px solid #36553f;display:grid;place-items:center;font-weight:900;color:#e8d38f;font-size:11px}.mname{flex:1;font-weight:800;font-size:12px}.status{font-size:9px;font-weight:900;padding:6px 9px;border-radius:999px}.available{background:#123f26;color:#9ff1b8}.unavailable{background:#482224;color:#ffc5c5}.partial{background:#4a3b19;color:#f4db8e}
 .gigcard{padding:15px}.gighero{height:115px;border-radius:14px;overflow:hidden;position:relative}.gighero img{width:100%;height:100%;object-fit:cover;filter:brightness(.65)}.gighero .gtext{position:absolute;left:13px;bottom:11px}.gtext .pill{display:inline-block;background:#d7b45b;color:#10150e;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:950}.gtext h3{margin:7px 0 0;font-size:19px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.meta div{background:#131c16;border:1px solid #25342b;border-radius:11px;padding:10px;font-size:10px;color:#aeb9b1}.meta b{display:block;color:#f1ebda;font-size:11px;margin-bottom:2px}
@@ -66,12 +72,15 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .guinnessPint .head{position:absolute;left:4px;top:2px;width:34px;height:12px;background:#f2eee1;border:2px solid #d9d4c3;border-radius:8px 8px 5px 5px;box-shadow:0 2px 0 #cfc8b2}
 .guinnessPint .handle{position:absolute;right:0;top:17px;width:11px;height:18px;border:3px solid #d9d4c3;border-left:0;border-radius:0 10px 10px 0}
 .guinnessPint .base{position:absolute;left:3px;bottom:0;width:36px;height:4px;background:#d9d4c3;border-radius:4px}
+
+.heroPint{position:absolute;z-index:3;right:10px;top:70px;width:104px;height:170px;object-fit:contain;filter:drop-shadow(0 12px 18px rgba(0,0,0,.55));opacity:.98}
 </style>
 </head>
 <body>
 <div class="app">
   <section class="hero">
     <img src="./pintmen-band.jpg" alt="The Pintmen live">
+    <img class="heroPint" src="./guinness-pint.png" alt="Guinness pint">
     <div class="brand"><div class="kicker">TRAD • TUNES • PINTS • GIGS</div><h1>THE PINTMEN</h1><div class="tag">GIG PLANNER</div></div>
   </section>
   <div class="topbar"><div><div class="title">Good craic, organised.</div><div class="sub">Doyle • Derwin • Marto • Reek • Git</div></div><div class="guinnessPint" aria-label="Pint of stout"><span class="glass"></span><span class="head"></span><span class="handle"></span><span class="base"></span></div></div>
@@ -135,20 +144,23 @@ function render(){
 }
 function renderCalendar(c){
  const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;
- let s=`<div class="focus"><div class="ball">🎻</div><div><b>Potential gig nights</b><small>Green = A + C both free after 18:00 • tap a date for full shift details</small></div></div>
+ let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday highlighted when A Watch + C Watch are both free after 18:00</small></div></div>
  <section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
- for(let i=0;i<total;i++){let n=i-start+1;if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}
+ for(let i=0;i<total;i++){
+  let n=i-start+1;
+  if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}
   const d=new Date(y,m,n), keyd=k(d), gig=data.gigs[keyd], weekend=d.getDay()===5||d.getDay()===6;
-  const next=new Date(d); next.setDate(next.getDate()+1);
-  const nextA=aCStatus("A",next), nextC=aCStatus("C",next);
-  const nextLine=weekend?`<div class="nextday"><b>${next.toLocaleDateString("en-IE",{weekday:"short"})} AM</b> · A ${statusShort(nextA)} · C ${statusShort(nextC)}</div>`:"";
-  s+=`<div class="day ${weekend?"weekend":""} ${gigable(d)?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')"><div class="num">${n}</div><div class="dotrow">
-   <span class="dot ${freeAfter6(aCStatus("A",d))?"free":"busy"}"></span><span class="dot ${freeAfter6(aCStatus("C",d))?"free":"busy"}"></span>${gig?'<span class="dot gig"></span>':""}
-  </div></div>`;
+  const a=aCStatus("A",d), cc=aCStatus("C",d), potential=gigable(d);
+  s+=`<div class="day ${weekend?"weekend":""} ${potential?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')">
+   <div class="num">${n}</div>
+   <div class="shiftlines"><div class="shiftline"><b>A:</b> <span class="${a==="NIGHT"?"night":a==="OFF"||a==="AVAILABLE"?"off":""}">${statusShort(a)}</span></div>
+   <div class="shiftline"><b>C:</b> <span class="${cc==="NIGHT"?"night":cc==="OFF"||cc==="AVAILABLE"?"off":""}">${statusShort(cc)}</span></div></div>
+   ${potential&&!gig?'<span class="availtag">AVAILABLE</span>':""}${gig?'<span class="gigtag">GIG ADDED</span>':""}
+  </div>`;
  }
- s+=`</div></div><div class="legend"><span><i class="dot free"></i>A/C free after 6</span><span><i class="dot gig"></i>Gig added</span><span><i class="dot busy"></i>Unavailable</span><span>Tap a date for next morning</span></div></section>`;
+ s+=`</div></div><div class="legend"><span>Fri/Sat green = potential gig night</span><span>A + C shifts shown on every date</span><span>Gold = confirmed gig added</span></div></section>`;
  const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);
- if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🎻 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
+ if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🍺 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
  c.innerHTML=s;
 }
 function gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
