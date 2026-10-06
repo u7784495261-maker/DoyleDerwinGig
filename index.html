@@ -59,7 +59,7 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .shiftline .off{color:#9ff1b8}
 .gigtag{position:absolute;right:6px;bottom:6px;background:#d7b45b;color:#10150e;border-radius:999px;padding:3px 6px;font-size:6px;font-weight:950;letter-spacing:.08em}
 .legend{display:flex;gap:9px;padding:0 15px 13px;flex-wrap:wrap}.legend span{font-size:9px;color:#9aa89f;display:flex;align-items:center;gap:4px}
-.list{padding:0 15px 15px}.member{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #202b24}.member:first-child{border-top:0}.face{width:34px;height:34px;border-radius:50%;background:#1b3325;border:1px solid #36553f;display:grid;place-items:center;font-weight:900;color:#e8d38f;font-size:11px}.mname{flex:1;font-weight:800;font-size:12px}.status{font-size:9px;font-weight:900;padding:6px 9px;border-radius:999px}.available{background:#123f26;color:#9ff1b8}.unavailable{background:#482224;color:#ffc5c5}.partial{background:#4a3b19;color:#f4db8e}
+.list{padding:0 15px 15px}.member{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #202b24}.member:first-child{border-top:0}.face{width:34px;height:34px;border-radius:50%;background:#1b3325;border:1px solid #36553f;display:grid;place-items:center;font-weight:900;color:#e8d38f;font-size:11px}.mname{flex:1;font-weight:800;font-size:12px}.status{font-size:9px;font-weight:900;padding:6px 9px;border-radius:999px}.available{background:#123f26;color:#9ff1b8}.unavailable{background:#482224;color:#ffc5c5}.partial{background:#4a3b19;color:#f4db8e}.availchips{display:flex;flex-direction:column;gap:3px;margin-top:5px}.avchip{font-size:8px;font-weight:800;line-height:1.2;padding:3px 5px;border-radius:5px;background:#3d3218;color:#f1d98e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.avchip.free{background:#123f26;color:#9ff1b8}
 .gigcard{padding:15px}.gighero{height:115px;border-radius:14px;overflow:hidden;position:relative}.gighero img{width:100%;height:100%;object-fit:cover;filter:brightness(.65)}.gighero .gtext{position:absolute;left:13px;bottom:11px}.gtext .pill{display:inline-block;background:#d7b45b;color:#10150e;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:950}.gtext h3{margin:7px 0 0;font-size:19px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.meta div{background:#131c16;border:1px solid #25342b;border-radius:11px;padding:10px;font-size:10px;color:#aeb9b1}.meta b{display:block;color:#f1ebda;font-size:11px;margin-bottom:2px}
 .fab{position:fixed;right:calc(50% - 230px);bottom:78px;width:54px;height:54px;border-radius:50%;border:1px solid #75df9c;background:#1c9b51;color:#fff;font-size:28px;box-shadow:0 12px 35px rgba(0,0,0,.4)}@media(max-width:520px){.fab{right:18px}}
 .bottom{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(520px,100%);height:68px;background:rgba(7,11,9,.95);backdrop-filter:blur(18px);border-top:1px solid #25332a;display:grid;grid-template-columns:repeat(4,1fr);z-index:10}.bottom button{border:0;background:transparent;color:#718078;font-size:9px;font-weight:800}.bottom button.active{color:#6be594}.bottom i{display:block;font-style:normal;font-size:19px;margin-bottom:2px}
@@ -87,7 +87,12 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .topbar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:15px 20px 13px;background:#07110b}
 .topbar .guinnessPint{width:62px;height:72px;overflow:hidden;border-radius:12px;flex:none;filter:drop-shadow(0 7px 10px rgba(0,0,0,.48));border:1px solid rgba(215,180,91,.28);background:#111}
 .topbar .guinnessPint img{width:100%;height:100%;object-fit:cover;object-position:center 43%;display:block}
-</style>
+<style>
+.settings-sheet{position:fixed;inset:0;background:rgba(0,0,0,.58);display:none;align-items:flex-end;justify-content:center;z-index:80;padding:14px}
+.settings-sheet.open{display:flex}
+.settings-panel{width:min(680px,100%);background:#0c1710;border:1px solid #28452f;border-radius:24px;padding:18px;box-shadow:0 20px 70px rgba(0,0,0,.45)}
+.settings-panel .danger{background:#6d2b24;color:#fff;border:0;border-radius:14px;padding:12px 16px;font-weight:800}
+</style></style>
 </head>
 <body>
 <div class="app">
@@ -118,6 +123,17 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 <label>Notes</label><textarea id="notes" placeholder="Set time, load-in, tunes, etc."></textarea>
 <div class="actions"><button type="button" id="cancel">Cancel</button><button type="button" class="danger" id="clear">Clear</button><button class="save">Save</button></div>
 </form></div>
+<div class="settings-sheet" id="settingsSheet">
+  <div class="settings-panel">
+    <div class="cardhead"><h2>Settings</h2><button type="button" class="iconbtn" id="settingsClose">×</button></div>
+    <div class="list">
+      <div class="sub">Signed in as</div>
+      <div id="settingsEmail" style="font-weight:800;margin-top:4px"></div>
+      <button type="button" class="save" id="settingsRefresh" style="margin-top:14px">Refresh shared data</button>
+      <button type="button" class="danger" id="settingsLogout" style="margin-top:10px">Log out</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast">Saved</div>
 
 <script>
@@ -152,7 +168,7 @@ function gigable(d){const wd=d.getDay();if(wd!==5&&wd!==6)return false;return fr
 function escape(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function setSyncStatus(t,ok=false){const el=document.getElementById("syncStatus");if(el){el.textContent=t;el.style.color=ok?"#8fe7ad":"#8d9b91"}}
 function render(){const c=document.getElementById("content");if(tab==="calendar")renderCalendar(c);else if(tab==="gigs")renderGigs(c);else renderAvailability(c);document.querySelectorAll("[data-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.tab===tab);b.onclick=()=>{tab=b.dataset.tab;render()}})}
-function renderCalendar(c){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday are highlighted when A Watch + C Watch are both free after 18:00.</small></div></div><section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;for(let i=0;i<total;i++){let n=i-start+1;if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}const d=new Date(y,m,n),keyd=k(d),gig=data.gigs[keyd],weekend=d.getDay()===5||d.getDay()===6,a=aCStatus("A",d),cc=aCStatus("C",d),potential=gigable(d);s+=`<div class="day ${weekend?"weekend":""} ${potential?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')"><div class="num">${n}</div><div class="shiftlines"><div class="shiftline"><b>A:</b> <span class="${a==="NIGHT"?"night":a==="OFF"||a==="AVAILABLE"?"off":""}">${statusShort(a)}</span></div><div class="shiftline"><b>C:</b> <span class="${cc==="NIGHT"?"night":cc==="OFF"||cc==="AVAILABLE"?"off":""}">${statusShort(cc)}</span></div></div>${gig?'<span class="gigtag">GIG ADDED</span>':""}</div>`}s+=`</div></div><div class="legend"><span>Green highlight = potential gig night</span><span>A + C shifts shown on every date</span><span>Gold = gig added</span></div></section>`;const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🍺 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}c.innerHTML=s}
+function renderCalendar(c){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday are highlighted when A Watch + C Watch are both free after 18:00.</small></div></div><section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;for(let i=0;i<total;i++){let n=i-start+1;if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}const d=new Date(y,m,n),keyd=k(d),gig=data.gigs[keyd],weekend=d.getDay()===5||d.getDay()===6,a=aCStatus("A",d),cc=aCStatus("C",d),potential=gigable(d),changes=data.edits[keyd]||{},changeMembers=members.filter(mem=>changes[mem]);let chips="";if(changeMembers.length){const shown=changeMembers.slice(0,2);chips=`<div class="availchips">${shown.map(mem=>`<div class="avchip ${changes[mem]==="available"?"free":""}">${escape(mem)}: ${changes[mem]==="available"?"FREE":"LEAVE"}</div>`).join("")}${changeMembers.length>2?`<div class="avchip">+${changeMembers.length-2} more</div>`:""}</div>`}s+=`<div class="day ${weekend?"weekend":""} ${potential?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')"><div class="num">${n}</div><div class="shiftlines"><div class="shiftline"><b>A:</b> <span class="${a==="NIGHT"?"night":a==="OFF"||a==="AVAILABLE"?"off":""}">${statusShort(a)}</span></div><div class="shiftline"><b>C:</b> <span class="${cc==="NIGHT"?"night":cc==="OFF"||cc==="AVAILABLE"?"off":""}">${statusShort(cc)}</span></div></div>${chips}${gig?'<span class="gigtag">GIG ADDED</span>':""}</div>`}s+=`</div></div><div class="legend"><span>Green highlight = potential gig night</span><span>A + C shifts shown on every date</span><span>Leave / availability changes shown on their date</span><span>Gold = gig added</span></div></section>`;const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🍺 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}c.innerHTML=s}
 function gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
 function renderGigs(c){let entries=Object.entries(data.gigs).sort();let s=`<section class="card"><div class="cardhead"><h2>🎻 The Pintmen gigs</h2><button class="iconbtn" onclick="openNew('gig')">+</button></div>`;if(!entries.length)s+=`<div class="list"><div class="sub">No gigs added yet. Tap + to add the first one.</div></div>`;else entries.forEach(([d,g])=>s+=gigMini(d,g));s+=`</section>`;c.innerHTML=s}
 function renderAvailability(c){let rows="";for(const m of members){const dates=Object.entries(data.edits).filter(([d,v])=>v?.[m]).sort().slice(-3);const latest=dates.length?dates.map(([d,v])=>`${d}: ${v[m]}`).join(" • "):"No shared changes";rows+=`<div class="member"><div class="face">${m[0]}</div><div class="mname">${m}<div class="sub">${latest}</div></div><span class="status partial">Set dates</span></div>`}c.innerHTML=`<section class="card"><div class="cardhead"><h2>👥 The Pintmen</h2><button class="iconbtn" onclick="openNew(\"leave\")">+</button></div><div class="list">${rows}</div></section><section class="card"><div class="cardhead"><h2>Shared availability</h2></div><div class="list"><div class="sub">Add leave or mark a member available for a specific date. These changes are shared with everyone signed in.</div></div></section>`}
@@ -194,10 +210,35 @@ async function saveGig(date){const payload={"GigsGig Date":date,"Gig name":docum
 async function saveAvailability(date,member,status){const res=await db.from("availability").upsert({date,member,status},{onConflict:"date,member"});if(res.error){console.error(res.error);toast("Could not save availability");return false}return true}
 document.getElementById("form").onsubmit=async e=>{e.preventDefault();const date=document.getElementById("date").value,type=document.getElementById("type").value;if(!date)return;const ok=type==="gig"?await saveGig(date):await saveAvailability(date,document.getElementById("member").value,type==="leave"?"leave":"available");if(ok){document.getElementById("modal").classList.remove("open");toast("Shared & saved");await loadData()}}
 document.getElementById("cancel").onclick=()=>document.getElementById("modal").classList.remove("open");
-document.getElementById("clear").onclick=async()=>{const date=document.getElementById("date").value,g=data.gigs[date];if(g?.id){const res=await db.from("Gigs").delete().eq("id",g.id);if(res.error){toast("Could not delete");return}}document.getElementById("modal").classList.remove("open");toast("Removed");await loadData()};
+document.getElementById("clear").onclick=async()=>{
+  const date=document.getElementById("date").value;
+  const type=document.getElementById("type").value;
+  let res;
+  if(type==="gig"){
+    const g=data.gigs[date];
+    if(!g?.id){toast("Nothing to delete");return}
+    if(!confirm("Delete this gig?"))return;
+    res=await db.from("Gigs").delete().eq("id",g.id);
+  }else{
+    const member=document.getElementById("member").value;
+    if(!data.edits[date]?.[member]){toast("No shared change for this date");return}
+    if(!confirm(`Remove ${member}'s ${data.edits[date][member]} entry?`))return;
+    res=await db.from("availability").delete().eq("date",date).eq("member",member);
+  }
+  if(res?.error){console.error(res.error);toast("Could not delete");return}
+  document.getElementById("modal").classList.remove("open");
+  toast("Removed");
+  await loadData();
+};
 document.getElementById("add").onclick=()=>openNew("gig");
 document.getElementById("more").onclick=()=>toast("The Pintmen • shared calendar");
-document.getElementById("settings").onclick=()=>toast(currentUser?`Signed in as ${currentUser.email}`:"Not signed in");
+document.getElementById("settings").onclick=()=>{
+  document.getElementById("settingsEmail").textContent=currentUser?.email||"Not signed in";
+  document.getElementById("settingsSheet").classList.add("open");
+};
+document.getElementById("settingsClose").onclick=()=>document.getElementById("settingsSheet").classList.remove("open");
+document.getElementById("settingsRefresh").onclick=async()=>{document.getElementById("settingsSheet").classList.remove("open");await loadData();toast("Shared data refreshed")};
+document.getElementById("settingsLogout").onclick=async()=>{document.getElementById("settingsSheet").classList.remove("open");await db.auth.signOut()};
 document.getElementById("logout").onclick=async()=>{await db.auth.signOut()};
 document.getElementById("authForm").onsubmit=async e=>{e.preventDefault();const err=document.getElementById("authError");err.style.display="none";const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;const {error}=await db.auth.signInWithPassword({email,password});if(error){err.textContent=error.message;err.style.display="block"}};
 function showApp(){document.getElementById("authModal").classList.remove("open");document.getElementById("logout").style.display="block"}
