@@ -104,10 +104,10 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 
 <div class="modal open" id="authModal"><form class="sheet" id="authForm">
 <h2>🍺 The Pintmen</h2><div class="hint">Sign in to access the shared band calendar.</div>
-<label>Email</label><input id="authEmail" type="email" autocomplete="email" placeholder="Your band account email" required>
+<label>Email</label><input id="authEmail" type="email" autocomplete="email" placeholder="Your band account email" autocomplete="email" required>
 <label style="margin-top:9px">Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Password" required>
 <div class="actions"><button class="save" type="submit">Sign in</button></div>
-<div id="authError" class="hint" style="color:#ffb8b8;display:none;margin-top:10px"></div>
+<div id="authError" class="hint" style="color:#ffb8b8;display:none;margin-top:10px"></div><div class="hint" style="margin-top:10px">You'll stay signed in on this device until you choose Log out.</div>
 </form></div>
 
 <div class="modal" id="modal"><form class="sheet" id="form">
@@ -123,7 +123,15 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 <script>
 const SUPABASE_URL="https://mphcbobptpvpkcgryljk.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_UejRWFJHreNxOndgTWnxog_hFMn4FEC";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{
+  auth:{
+    persistSession:true,
+    autoRefreshToken:true,
+    detectSessionInUrl:false,
+    storage:window.localStorage,
+    storageKey:"pintmen-auth-session"
+  }
+});
 const rosterAnchor=new Date(2026,9,1);
 const rosterCycle=[
  ["C","D"],["B","C"],["A","B"],["A","B"],["D","A"],["C","D"],["B","C"],["B","C"],
@@ -157,7 +165,7 @@ async function loadData(){
   setSyncStatus("Loading shared calendar…");
   try{
     const [g,a]=await Promise.all([
-      db.from("Gigs").select("*").order("gig_date"),
+      db.from("Gigs").select("*"),
       db.from("availability").select("*")
     ]);
     if(g.error){
@@ -171,7 +179,7 @@ async function loadData(){
       toast(`Availability: ${a.error.message||"could not load"}`);
     }
     data={edits:{},gigs:{}};
-    (g.data||[]).forEach(r=>{data.gigs[r.gig_date]={id:r.id,name:r.gig_name||"",venue:r.venue||"",time:r.gig_time||"",notes:r.notes||"",addedBy:r.added_by||""}});
+    (g.data||[]).forEach(r=>{data.gigs[r["GigsGig Date"]]={id:r.id,name:r["Gig name"]||"",venue:r["Venue"]||"",time:r["Gig time"]||"",notes:r["Notes"]||"",addedBy:r["Added by"]||""}});
     (a.data||[]).forEach(r=>{data.edits[r.date]=data.edits[r.date]||{};data.edits[r.date][r.member]=r.status});
     if(!g.error&&!a.error)setSyncStatus("Shared • synced",true);
     render();
@@ -182,7 +190,7 @@ async function loadData(){
     render();
   }
 }
-async function saveGig(date){const payload={gig_date:date,gig_name:document.getElementById("gigName").value.trim(),venue:document.getElementById("venue").value.trim(),gig_time:document.getElementById("time").value.trim(),notes:document.getElementById("notes").value.trim(),added_by:currentUser?.email||""};const existing=data.gigs[date];let res;if(existing?.id)res=await db.from("Gigs").update(payload).eq("id",existing.id);else res=await db.from("Gigs").insert(payload);if(res.error){console.error(res.error);toast("Could not save — check Supabase setup");return false}return true}
+async function saveGig(date){const payload={"GigsGig Date":date,"Gig name":document.getElementById("gigName").value.trim(),"Venue":document.getElementById("venue").value.trim(),"Gig time":document.getElementById("time").value.trim(),"Notes":document.getElementById("notes").value.trim(),"Added by":currentUser?.email||""};const existing=data.gigs[date];let res;if(existing?.id)res=await db.from("Gigs").update(payload).eq("id",existing.id);else res=await db.from("Gigs").insert(payload);if(res.error){console.error(res.error);toast("Could not save — check Supabase setup");return false}return true}
 async function saveAvailability(date,member,status){const res=await db.from("availability").upsert({date,member,status},{onConflict:"date,member"});if(res.error){console.error(res.error);toast("Could not save availability");return false}return true}
 document.getElementById("form").onsubmit=async e=>{e.preventDefault();const date=document.getElementById("date").value,type=document.getElementById("type").value;if(!date)return;const ok=type==="gig"?await saveGig(date):await saveAvailability(date,document.getElementById("member").value,type==="leave"?"leave":"available");if(ok){document.getElementById("modal").classList.remove("open");toast("Shared & saved");await loadData()}}
 document.getElementById("cancel").onclick=()=>document.getElementById("modal").classList.remove("open");
