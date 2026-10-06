@@ -56,7 +56,6 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 .shiftline b{color:#d7b45b}
 .shiftline .night{color:#ffcbc6}
 .shiftline .off{color:#9ff1b8}
-.availtag{position:absolute;right:6px;bottom:6px;background:#25c96d;color:#061109;border-radius:999px;padding:3px 6px;font-size:6px;font-weight:950;letter-spacing:.08em}
 .gigtag{position:absolute;right:6px;bottom:6px;background:#d7b45b;color:#10150e;border-radius:999px;padding:3px 6px;font-size:6px;font-weight:950;letter-spacing:.08em}
 .legend{display:flex;gap:9px;padding:0 15px 13px;flex-wrap:wrap}.legend span{font-size:9px;color:#9aa89f;display:flex;align-items:center;gap:4px}
 .list{padding:0 15px 15px}.member{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #202b24}.member:first-child{border-top:0}.face{width:34px;height:34px;border-radius:50%;background:#1b3325;border:1px solid #36553f;display:grid;place-items:center;font-weight:900;color:#e8d38f;font-size:11px}.mname{flex:1;font-weight:800;font-size:12px}.status{font-size:9px;font-weight:900;padding:6px 9px;border-radius:999px}.available{background:#123f26;color:#9ff1b8}.unavailable{background:#482224;color:#ffc5c5}.partial{background:#4a3b19;color:#f4db8e}
@@ -75,7 +74,18 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 
 
 
-.headerPint{width:58px;height:76px;object-fit:contain;display:block;position:absolute;right:26px;bottom:14px;filter:drop-shadow(0 5px 9px rgba(0,0,0,.55));border-radius:10px}
+
+/* Final premium layout: band stays unobstructed; Guinness is a separate accent. */
+.hero{position:relative;height:300px;overflow:hidden;background:#07100b}
+.hero>img:first-child{width:100%;height:100%;display:block;object-fit:cover;object-position:center 42%;filter:saturate(.94) contrast(1.04)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.08) 30%,rgba(4,10,7,.72) 100%)}
+.brand{position:absolute;z-index:3;left:18px;right:18px;bottom:20px;text-align:center;text-shadow:0 4px 18px rgba(0,0,0,.8)}
+.brand .kicker{font-size:9px;letter-spacing:.28em;font-weight:900;color:#e7d99e}
+.brand h1{font-family:Georgia,serif;font-size:clamp(36px,9vw,48px);line-height:.94;margin:7px 0;color:#fff6d9;letter-spacing:.02em}
+.brand .tag{font-size:9px;letter-spacing:.22em;color:#d9c58b;font-weight:900}
+.topbar{position:relative;display:flex;align-items:center;justify-content:space-between;padding:15px 20px 13px;background:#07110b}
+.topbar .guinnessPint{width:62px;height:72px;overflow:hidden;border-radius:12px;flex:none;filter:drop-shadow(0 7px 10px rgba(0,0,0,.48));border:1px solid rgba(215,180,91,.28);background:#111}
+.topbar .guinnessPint img{width:100%;height:100%;object-fit:cover;object-position:center 43%;display:block}
 </style>
 </head>
 <body>
@@ -84,7 +94,7 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
     <img src="./pintmen-band.jpg" alt="The Pintmen live">
     <div class="brand"><div class="kicker">TRAD • TUNES • PINTS • GIGS</div><h1>THE PINTMEN</h1><div class="tag">GIG PLANNER</div></div>
   </section>
-  <div class="topbar"><div><div class="title">Good craic, organised.</div><div class="sub">Doyle • Derwin • Marto • Reek • Git</div></div><div class="guinnessPint" aria-label="Pint of stout"><span class="glass"></span><span class="head"></span><span class="handle"></span><span class="base"></span></div></div>
+  <div class="topbar"><div><div class="title">Good craic, organised.</div><div class="sub">Doyle • Derwin • Marto • Reek • Git</div></div><div class="guinnessPint" aria-label="Guinness pint"><img src="./guinness-pint.png" alt="Guinness pint"></div></div>
   <div class="controls"><div class="seg"><button class="active" data-tab="calendar">Calendar</button><button data-tab="gigs">Gigs</button><button data-tab="availability">Availability</button></div><button class="iconbtn" id="settings">⚙</button></div>
   <div id="content"></div>
   <button class="fab" id="add">+</button>
@@ -145,8 +155,7 @@ function render(){
 }
 function renderCalendar(c){
  const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;
- let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday highlighted when A Watch + C Watch are both free after 18:00</small></div></div>
- <section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
+ let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday are highlighted when A Watch + C Watch are both free after 18:00.</small></div></div><section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
  for(let i=0;i<total;i++){
   let n=i-start+1;
   if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}
@@ -156,10 +165,10 @@ function renderCalendar(c){
    <div class="num">${n}</div>
    <div class="shiftlines"><div class="shiftline"><b>A:</b> <span class="${a==="NIGHT"?"night":a==="OFF"||a==="AVAILABLE"?"off":""}">${statusShort(a)}</span></div>
    <div class="shiftline"><b>C:</b> <span class="${cc==="NIGHT"?"night":cc==="OFF"||cc==="AVAILABLE"?"off":""}">${statusShort(cc)}</span></div></div>
-   ${potential&&!gig?'<span class="availtag">AVAILABLE</span>':""}${gig?'<span class="gigtag">GIG ADDED</span>':""}
+   ${gig?'<span class="gigtag">GIG ADDED</span>':""}
   </div>`;
  }
- s+=`</div></div><div class="legend"><span>Fri/Sat green = potential gig night</span><span>A + C shifts shown on every date</span><span>Gold = confirmed gig added</span></div></section>`;
+ s+=`</div></div><div class="legend"><span>Green highlight = potential gig night</span><span>A + C shifts shown on every date</span><span>Gold = gig added</span></div></section>`;
  const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);
  if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🍺 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
  c.innerHTML=s;
