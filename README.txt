@@ -1,6 +1,6 @@
 THE PINTMEN — GITHUB UPLOAD
 
-Upload these six files directly into the ROOT of the repository:
+Upload these seven files directly into the ROOT of the repository:
 - index.html
 - manifest.webmanifest
 - sw.js
