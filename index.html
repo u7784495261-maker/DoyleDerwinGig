@@ -145,7 +145,7 @@ function renderCalendar(c){
  if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🎻 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
  c.innerHTML=s;
 }
-function gigMinifunction gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
+function gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
 function renderGigs(c){let entries=Object.entries(data.gigs).sort();let s=`<section class="card"><div class="cardhead"><h2>🎻 The Pintmen gigs</h2><button class="iconbtn" onclick="openNew('gig')">+</button></div>`;if(!entries.length)s+=`<div class="list"><div class="sub">No gigs added yet. Tap + to add the first one.</div></div>`;else entries.forEach(([d,g])=>s+=gigMini(d,g));s+=`</section>`;c.innerHTML=s}
 function renderAvailability(c){
  let d=new Date(); let rows="";
