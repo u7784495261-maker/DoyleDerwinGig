@@ -130,10 +130,18 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
       <div class="sub">Signed in as</div>
       <div id="settingsEmail" style="font-weight:800;margin-top:4px"></div>
       <button type="button" class="save" id="settingsRefresh" style="margin-top:14px">Refresh shared data</button>
+      <button type="button" class="save" id="changePassword" style="margin-top:10px">Change password</button>
       <button type="button" class="danger" id="settingsLogout" style="margin-top:10px">Log out</button>
     </div>
   </div>
 </div>
+<div class="modal" id="passwordModal"><form class="sheet" id="passwordForm">
+<h2>Change password</h2><div class="hint">Choose a new password for the shared Pintmen login. You are already signed in, so no recovery email is needed.</div>
+<label style="margin-top:10px">New password</label><input id="newPassword" type="password" autocomplete="new-password" minlength="6" placeholder="New password" required>
+<label style="margin-top:9px">Confirm new password</label><input id="confirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Repeat password" required>
+<div id="passwordError" class="hint" style="color:#ffb8b8;display:none;margin-top:10px"></div>
+<div class="actions"><button type="button" id="passwordCancel">Cancel</button><button class="save" type="submit">Update password</button></div>
+</form></div>
 <div class="toast" id="toast">Saved</div>
 
 <script>
@@ -238,6 +246,9 @@ document.getElementById("settings").addEventListener("click",()=>{
 });
 document.getElementById("settingsClose").onclick=()=>document.getElementById("settingsSheet").classList.remove("open");
 document.getElementById("settingsRefresh").onclick=async()=>{document.getElementById("settingsSheet").classList.remove("open");await loadData();toast("Shared data refreshed")};
+document.getElementById("changePassword").onclick=()=>{document.getElementById("settingsSheet").classList.remove("open");document.getElementById("newPassword").value="";document.getElementById("confirmPassword").value="";document.getElementById("passwordError").style.display="none";document.getElementById("passwordModal").classList.add("open");document.getElementById("newPassword").focus()};
+document.getElementById("passwordCancel").onclick=()=>document.getElementById("passwordModal").classList.remove("open");
+document.getElementById("passwordForm").onsubmit=async e=>{e.preventDefault();const err=document.getElementById("passwordError");const a=document.getElementById("newPassword").value;const b=document.getElementById("confirmPassword").value;err.style.display="none";if(a.length<6){err.textContent="Password must be at least 6 characters.";err.style.display="block";return}if(a!==b){err.textContent="The passwords do not match.";err.style.display="block";return}const {error}=await db.auth.updateUser({password:a});if(error){console.error(error);err.textContent=error.message||"Could not update password.";err.style.display="block";return}document.getElementById("passwordModal").classList.remove("open");toast("Password updated");};
 document.getElementById("settingsLogout").onclick=async()=>{document.getElementById("settingsSheet").classList.remove("open");await db.auth.signOut()};
 document.getElementById("logout").onclick=async()=>{await db.auth.signOut()};
 document.getElementById("authForm").onsubmit=async e=>{e.preventDefault();const err=document.getElementById("authError");err.style.display="none";const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;const {error}=await db.auth.signInWithPassword({email,password});if(error){err.textContent=error.message;err.style.display="block"}};
