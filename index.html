@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d12">
+<title>A + C Gigging Calendar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#090d12;color:#f5f7fa;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:20px 16px 16px;background:linear-gradient(145deg,#151d27,#090d12);border-bottom:1px solid #293441;position:sticky;top:0;z-index:5}
+h1{margin:0;font-size:23px;letter-spacing:-.5px}
+.sub{color:#8f9baa;font-size:12px;margin-top:5px}
+main{max-width:760px;margin:auto;padding:13px}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+button,select,input,textarea{font:inherit}
+button{background:#1a232e;color:#fff;border:1px solid #33404e;border-radius:12px;padding:11px 14px;font-weight:750;min-height:44px}
+button:active{transform:scale(.98)}
+.month{font-size:18px;font-weight:850;text-align:center}
+.legend{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px}
+.legend span{font-size:10px;font-weight:850;padding:6px 9px;border-radius:999px}
+.lfree{background:#194b2b;color:#dfffe8}.lgig{background:#5b4312;color:#fff0b5}.lbusy{background:#51252e;color:#ffdce1}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.week{font-size:10px;text-align:center;color:#778494;font-weight:850;text-transform:uppercase;padding:4px 0}
+.day{min-height:122px;border:1px solid #27313d;border-radius:14px;background:#141b23;padding:7px;position:relative;cursor:pointer}
+.day.weekend{background:#171e27}
+.day.gigfree{background:linear-gradient(145deg,#203f2b,#111f18);border-color:#54c575;box-shadow:0 0 0 2px rgba(84,197,117,.08)}
+.day.manualgig{border-color:#d3a63b;box-shadow:0 0 0 2px rgba(211,166,59,.10)}
+.day.muted{opacity:.25;cursor:default}
+.date{font-size:12px;font-weight:850;color:#aeb8c5}
+.badge{margin-top:6px;border-radius:8px;padding:5px 3px;font-size:9px;font-weight:850;text-align:center;line-height:1.15}
+.free{background:#1b5831;color:#ddffe7}.busy{background:#552731;color:#ffdde2}
+.leave{background:#4c3b16;color:#ffe9a6}
+.giglabel{margin-top:6px;color:#dfffe7;font-size:9px;font-weight:950;letter-spacing:.04em}
+.manual{margin-top:5px;color:#ffe29a;font-size:9px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note{margin:13px 0;padding:13px;border:1px solid #293441;border-radius:15px;background:#121820;color:#9ca8b6;font-size:11px;line-height:1.45}
+.modalwrap{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modalwrap.open{display:flex}
+.modal{width:min(680px,100%);background:#111820;border:1px solid #303b49;border-bottom:0;border-radius:22px 22px 0 0;padding:18px;box-shadow:0 -20px 70px rgba(0,0,0,.45)}
+.modal h2{margin:0 0 4px;font-size:20px}.modal .hint{color:#8e9aaa;font-size:11px;margin-bottom:14px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+label{font-size:11px;color:#aeb8c5;font-weight:750;display:block;margin-bottom:5px}
+select,input,textarea{width:100%;background:#1a232e;color:#fff;border:1px solid #344150;border-radius:11px;padding:11px}
+textarea{min-height:70px;resize:vertical}
+.actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1}
+.primary{background:#2c7543;border-color:#4cae68}.danger{background:#47252c;border-color:#6a3540}
+@media(max-width:430px){.day{min-height:114px;padding:6px}.badge{font-size:8.5px}.modal{padding:15px}.row{gap:7px}}
+</style>
+
+<style>
+/* Irish trad / session theme */
+body{
+  background:
+    radial-gradient(circle at 8% 0%,rgba(44,120,73,.18),transparent 30%),
+    radial-gradient(circle at 92% 10%,rgba(193,143,55,.12),transparent 28%),
+    #080d0a!important;
+}
+header{
+  background:
+    linear-gradient(135deg,rgba(12,54,34,.96),rgba(8,15,12,.98))!important;
+  border-bottom:1px solid #496d50!important;
+}
+header h1{font-family:Georgia,serif;letter-spacing:-.3px}
+.sub{color:#b8c9b9!important}
+.day{
+  background:linear-gradient(145deg,#151d18,#101612)!important;
+  border-color:#2b3b31!important;
+}
+.day.weekend{background:linear-gradient(145deg,#19241d,#111812)!important}
+.day.gigfree{
+  background:
+    radial-gradient(circle at 85% 10%,rgba(224,180,73,.18),transparent 27%),
+    linear-gradient(145deg,#24452e,#112218)!important;
+  border-color:#bd9745!important;
+}
+.day.manualgig{
+  border-color:#d0a64b!important;
+}
+.giglabel{
+  color:#f0cf75!important;
+  letter-spacing:.08em!important;
+}
+.badge.free{background:#164a2c!important;color:#dff9e5!important}
+.badge.busy{background:#3d2720!important;color:#ffe4cf!important}
+.badge.leave{background:#4a3b18!important;color:#ffe7a0!important}
+button{
+  background:#17231b!important;
+  border-color:#3b5642!important;
+}
+.primary{
+  background:#21643a!important;
+  border-color:#4c9360!important;
+}
+.lfree{background:#17482b!important;color:#ddf8e4!important}
+.lgig{background:#574516!important;color:#ffe9a0!important}
+.lbusy{background:#40251f!important;color:#ffddca!important}
+.note{
+  background:#101812!important;
+  border-color:#2e4034!important;
+}
+.modal{
+  background:#101711!important;
+  border-color:#405345!important;
+}
+select,input,textarea{
+  background:#18221b!important;
+  border-color:#3a4c3e!important;
+}
+</style>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#090d12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="A+C Gigs">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+<header>
+  <h1>🎸 A + C Gigging Calendar</h1>
+  <div class="sub">Plan Friday & Saturday evenings • tap any date to edit</div><div style="margin-top:9px;font-family:Georgia,serif;color:#d9bd70;font-size:11px;letter-spacing:.05em">☘︎  SESSION NIGHTS  •  🎻  🪕  🎶  •  CRAIC & TUNES</div>
+</header>
+<main>
+  <div class="nav">
+    <button id="prev" type="button">‹</button>
+    <div class="month" id="month"></div>
+    <button id="next" type="button">›</button>
+  </div>
+  <div class="legend">
+    <span class="lfree">🟢 FREE AFTER 6</span>
+    <span class="lgig">🎸 GIG ADDED</span>
+    <span class="lbusy">🌙 NIGHT WATCH</span>
+  </div>
+  <div class="grid" id="cal"></div>
+  <div class="note"><b>Tap a date</b> to add leave for A or C, mark a gig, give it a name and add notes. Leave overrides that person's roster for planning purposes. A Day Watch counts as available after 18:00; a Night Watch does not.</div>
+</main>
+
+<div class="modalwrap" id="modal">
+  <form class="modal" id="form">
+    <h2 id="modalTitle">Edit date</h2>
+    <div class="hint">Roster is the underlying watch pattern. Your edits are saved only on this device.</div>
+    <div class="row">
+      <div><label for="aStatus">A Watch</label><select id="aStatus">
+        <option value="">Use roster</option><option value="leave">Leave / unavailable</option><option value="available">Available</option><option value="night">Night Watch</option>
+      </select></div>
+      <div><label for="cStatus">C Watch</label><select id="cStatus">
+        <option value="">Use roster</option><option value="leave">Leave / unavailable</option><option value="available">Available</option><option value="night">Night Watch</option>
+      </select></div>
+    </div>
+    <div class="row">
+      <div><label for="gig">Gig</label><select id="gig"><option value="no">No gig</option><option value="yes">🎻 Trad / Irish gig planned</option></select></div>
+      <div><label for="gigName">Gig name</label><input id="gigName" placeholder="e.g. Pub gig"></div>
+    </div>
+    <label for="notes">Notes</label><textarea id="notes" placeholder="Venue, time, set list, etc."></textarea>
+    <div class="actions">
+      <button type="button" id="cancel">Cancel</button>
+      <button type="button" class="danger" id="clear">Clear edits</button>
+      <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</div>
+
+<script>
+const anchor=new Date(Date.UTC(2026,9,1));
+const cycle=[
+ ["C","D"],["B","C"],["A","B"],["A","B"],["D","A"],["C","D"],["B","C"],["B","C"],
+ ["A","B"],["D","A"],["D","A"],["C","D"],["B","C"],["A","B"],["A","B"],["D","A"],
+ ["C","D"],["C","D"],["B","C"],["A","B"],["D","A"],["D","A"],["C","D"],["B","C"],
+ ["B","C"],["A","B"],["A","B"],["D","A"]
+];
+const key="acGigEditsV1";
+let edits=JSON.parse(localStorage.getItem(key)||"{}");
+let view=new Date(2026,9,1), selected=null;
+
+function dateKey(d){return d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0")+"-"+String(d.getUTCDate()).padStart(2,"0")}
+function pairFor(d){const diff=Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-anchor.getTime())/86400000);return cycle[((diff%28)+28)%28]}
+function baseStatus(w,p){return p.includes(w)?(p[1]===w?"NIGHT":"DAY"):"OFF"}
+function effective(w,base,e){const v=e?.[w];if(v==="night")return "NIGHT";if(v==="leave")return "LEAVE";if(v==="available")return "DAY";return base}
+function isFreeAfter6(status){return status!=="NIGHT"}
+function save(){localStorage.setItem(key,JSON.stringify(edits))}
+function render(){
+ const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0);
+ document.getElementById("month").textContent=view.toLocaleDateString("en-IE",{month:"long",year:"numeric"});
+ let start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7,s="";
+ ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(x=>s+=`<div class="week">${x}</div>`);
+ for(let i=0;i<total;i++){
+  const d=i-start+1;if(d<1||d>last.getDate()){s+="<div class='day muted'></div>";continue}
+  const dt=new Date(y,m,d),k=dateKey(dt),p=pairFor(dt),e=edits[k]||{},a=effective("A",baseStatus("A",p),e),c=effective("C",baseStatus("C",p),e);
+  const weekend=dt.getDay()===5||dt.getDay()===6, free=isFreeAfter6(a)&&isFreeAfter6(c), gig=weekend&&free, manual=e.gig==="yes";
+  const badge=(who,st)=>`<div class="badge ${st==="NIGHT"?"busy":st==="LEAVE"?"leave":"free"}">${who} ${st==="LEAVE"?"LEAVE":st}</div>`;
+  s+=`<div class="day ${weekend?"weekend":""} ${gig?"gigfree":""} ${manual?"manualgig":""}" data-k="${k}">
+    <div class="date">${d}</div>${badge("A",a)}${badge("C",c)}
+    ${gig?'<div class="giglabel">🎻 SESSION NIGHT</div>':""}
+    ${manual?`<div class="manual">🎻 ${escapeHtml(e.gigName||"SESSION")}</div>`:""}
+  </div>`;
+ }
+ document.getElementById("cal").innerHTML=s;
+ document.querySelectorAll(".day[data-k]").forEach(el=>el.addEventListener("click",()=>openEdit(el.dataset.k)));
+}
+function escapeHtml(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function openEdit(k){
+ selected=k;const e=edits[k]||{},[yy,mm,dd]=k.split("-").map(Number),d=new Date(yy,mm-1,dd);
+ document.getElementById("modalTitle").textContent=d.toLocaleDateString("en-IE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+ document.getElementById("aStatus").value=e.A||"";document.getElementById("cStatus").value=e.C||"";
+ document.getElementById("gig").value=e.gig||"no";document.getElementById("gigName").value=e.gigName||"";document.getElementById("notes").value=e.notes||"";
+ document.getElementById("modal").classList.add("open");
+}
+function closeEdit(){document.getElementById("modal").classList.remove("open");selected=null}
+document.getElementById("form").addEventListener("submit",ev=>{
+ ev.preventDefault();if(!selected)return;
+ edits[selected]={A:document.getElementById("aStatus").value,C:document.getElementById("cStatus").value,gig:document.getElementById("gig").value,gigName:document.getElementById("gigName").value.trim(),notes:document.getElementById("notes").value.trim()};
+ if(!edits[selected].A&&!edits[selected].C&&edits[selected].gig==="no"&&!edits[selected].gigName&&!edits[selected].notes)delete edits[selected];
+ save();closeEdit();render();
+});
+document.getElementById("clear").addEventListener("click",()=>{if(selected){delete edits[selected];save();closeEdit();render()}});
+document.getElementById("cancel").addEventListener("click",closeEdit);
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeEdit()});
+document.getElementById("prev").addEventListener("click",()=>{view.setMonth(view.getMonth()-1);render()});
+document.getElementById("next").addEventListener("click",()=>{view.setMonth(view.getMonth()+1);render()});
+render();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
