@@ -152,7 +152,36 @@ function move(n){view.setMonth(view.getMonth()+n);render()}
 function openDate(date){const g=data.gigs[date];if(g){openGig(date);return}openNew("gig",date)}
 function openGig(date){openNew("gig",date)}
 function openNew(type,date){const chosen=date||k(view);const isGig=type==="gig";document.getElementById("modalTitle").textContent=isGig?"Add Pintmen gig":"Add availability";document.getElementById("date").value=chosen;document.getElementById("type").value=isGig?"gig":(type==="available"?"available":"leave");document.getElementById("member").value=currentUser?.user_metadata?.member||members[0];document.getElementById("gigName").value=isGig?(data.gigs[chosen]?.name||""):"";document.getElementById("venue").value=isGig?(data.gigs[chosen]?.venue||""):"";document.getElementById("time").value=isGig?(data.gigs[chosen]?.time||""):"";document.getElementById("notes").value=isGig?(data.gigs[chosen]?.notes||""):"";document.getElementById("gigName").closest(".row").style.display=isGig?"grid":"none";document.getElementById("venue").closest(".row").style.display=isGig?"grid":"none";document.getElementById("notes").style.display=isGig?"block":"none";let nm=document.getElementById("nextMorningInfo");if(!nm){nm=document.createElement("div");nm.id="nextMorningInfo";document.querySelector("#form .hint").after(nm)}nm.innerHTML=nextMorningHtml(chosen);document.getElementById("modal").classList.add("open")}
-async function loadData(){if(!currentUser)return;setSyncStatus("Loading shared calendar…");const [g,a]=await Promise.all([db.from("Gigs").select("*").order("gig_date"),db.from("availability").select("*")]);if(g.error){console.error(g.error);setSyncStatus("Shared calendar error");toast("Gigs could not be loaded")};if(a.error){console.error(a.error);setSyncStatus("Shared calendar needs setup");}data={edits:{},gigs:{}};(g.data||[]).forEach(r=>{data.gigs[r.gig_date]={id:r.id,name:r.gig_name||"",venue:r.venue||"",time:r.gig_time||"",notes:r.notes||"",addedBy:r.added_by||""}});(a.data||[]).forEach(r=>{data.edits[r.date]=data.edits[r.date]||{};data.edits[r.date][r.member]=r.status});setSyncStatus("Shared • synced",true);render()}
+async function loadData(){
+  if(!currentUser)return;
+  setSyncStatus("Loading shared calendar…");
+  try{
+    const [g,a]=await Promise.all([
+      db.from("Gigs").select("*").order("gig_date"),
+      db.from("availability").select("*")
+    ]);
+    if(g.error){
+      console.error("Gigs load error:",g.error);
+      setSyncStatus(`Gigs error ${g.error.code||""}`.trim());
+      toast(`Gigs: ${g.error.message||"could not load"}`);
+    }
+    if(a.error){
+      console.error("Availability load error:",a.error);
+      if(!g.error)setSyncStatus(`Availability error ${a.error.code||""}`.trim());
+      toast(`Availability: ${a.error.message||"could not load"}`);
+    }
+    data={edits:{},gigs:{}};
+    (g.data||[]).forEach(r=>{data.gigs[r.gig_date]={id:r.id,name:r.gig_name||"",venue:r.venue||"",time:r.gig_time||"",notes:r.notes||"",addedBy:r.added_by||""}});
+    (a.data||[]).forEach(r=>{data.edits[r.date]=data.edits[r.date]||{};data.edits[r.date][r.member]=r.status});
+    if(!g.error&&!a.error)setSyncStatus("Shared • synced",true);
+    render();
+  }catch(err){
+    console.error("Shared calendar exception:",err);
+    setSyncStatus("Shared calendar error");
+    toast(err?.message||"Shared calendar could not load");
+    render();
+  }
+}
 async function saveGig(date){const payload={gig_date:date,gig_name:document.getElementById("gigName").value.trim(),venue:document.getElementById("venue").value.trim(),gig_time:document.getElementById("time").value.trim(),notes:document.getElementById("notes").value.trim(),added_by:currentUser?.email||""};const existing=data.gigs[date];let res;if(existing?.id)res=await db.from("Gigs").update(payload).eq("id",existing.id);else res=await db.from("Gigs").insert(payload);if(res.error){console.error(res.error);toast("Could not save — check Supabase setup");return false}return true}
 async function saveAvailability(date,member,status){const res=await db.from("availability").upsert({date,member,status},{onConflict:"date,member"});if(res.error){console.error(res.error);toast("Could not save availability");return false}return true}
 document.getElementById("form").onsubmit=async e=>{e.preventDefault();const date=document.getElementById("date").value,type=document.getElementById("type").value;if(!date)return;const ok=type==="gig"?await saveGig(date):await saveAvailability(date,document.getElementById("member").value,type==="leave"?"leave":"available");if(ok){document.getElementById("modal").classList.remove("open");toast("Shared & saved");await loadData()}}
