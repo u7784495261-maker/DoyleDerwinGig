@@ -21,6 +21,7 @@
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
 <title>The Pintmen — Gig Planner</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
  --bg:#070b09;--panel:#0e1511;--panel2:#131c16;--line:#26342b;
@@ -94,15 +95,23 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
     <img src="./pintmen-band.jpg" alt="The Pintmen live">
     <div class="brand"><div class="kicker">TRAD • TUNES • PINTS • GIGS</div><h1>THE PINTMEN</h1><div class="tag">GIG PLANNER</div></div>
   </section>
-  <div class="topbar"><div><div class="title">Good craic, organised.</div><div class="sub">Doyle • Derwin • Marto • Reek • Git</div></div><div class="guinnessPint" aria-label="Guinness pint"><img src="./guinness-pint.png" alt="Guinness pint"></div></div>
+  <div class="topbar"><div><div class="title">Good craic, organised.</div><div class="sub" id="syncStatus">Sign in required</div></div><div style="display:flex;align-items:center;gap:8px"><div class="guinnessPint" aria-label="Guinness pint"><img src="./guinness-pint.png" alt="Guinness pint"></div><button class="iconbtn" id="logout" style="display:none;width:40px;height:40px" title="Sign out">↪</button></div></div>
   <div class="controls"><div class="seg"><button class="active" data-tab="calendar">Calendar</button><button data-tab="gigs">Gigs</button><button data-tab="availability">Availability</button></div><button class="iconbtn" id="settings">⚙</button></div>
   <div id="content"></div>
   <button class="fab" id="add">+</button>
   <nav class="bottom"><button class="active" data-tab="calendar"><i>▦</i>Calendar</button><button data-tab="gigs"><i>♫</i>Gigs</button><button data-tab="availability"><i>♟</i>Band</button><button id="more"><i>☰</i>More</button></nav>
 </div>
 
+<div class="modal open" id="authModal"><form class="sheet" id="authForm">
+<h2>🍺 The Pintmen</h2><div class="hint">Sign in to access the shared band calendar.</div>
+<label>Email</label><input id="authEmail" type="email" autocomplete="email" placeholder="Your band account email" required>
+<label style="margin-top:9px">Password</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Password" required>
+<div class="actions"><button class="save" type="submit">Sign in</button></div>
+<div id="authError" class="hint" style="color:#ffb8b8;display:none;margin-top:10px"></div>
+</form></div>
+
 <div class="modal" id="modal"><form class="sheet" id="form">
-<h2 id="modalTitle">Add to The Pintmen</h2><div class="hint">Changes are saved on this device. Shared band sync can be connected later.</div>
+<h2 id="modalTitle">Add to The Pintmen</h2><div class="hint">Changes are shared with the band when you are signed in.</div>
 <div class="row"><div><label>Date</label><input id="date" type="date"></div><div><label>Type</label><select id="type"><option value="gig">🎻 Gig / Session</option><option value="leave">🏖️ Leave / Unavailable</option><option value="available">🟢 Available</option></select></div></div>
 <div class="row"><div><label>Member</label><select id="member"><option>Doyle</option><option>Derwin</option><option>Marto</option><option>Reek</option><option>Git</option></select></div><div><label>Gig name</label><input id="gigName" placeholder="e.g. Trad session"></div></div>
 <div class="row"><div><label>Venue</label><input id="venue" placeholder="Pub / venue"></div><div><label>Time</label><input id="time" placeholder="8:00pm"></div></div>
@@ -112,6 +121,9 @@ button,input,textarea,select{font:inherit} button{cursor:pointer}
 <div class="toast" id="toast">Saved</div>
 
 <script>
+const SUPABASE_URL="https://mphcbobptpvpkcgryljk.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_UejRWFJHreNxOndgTWnxog_hFMn4FEC";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const rosterAnchor=new Date(2026,9,1);
 const rosterCycle=[
  ["C","D"],["B","C"],["A","B"],["A","B"],["D","A"],["C","D"],["B","C"],["B","C"],
@@ -120,96 +132,40 @@ const rosterCycle=[
  ["B","C"],["A","B"],["A","B"],["D","A"]
 ];
 const members=["Doyle","Derwin","Marto","Reek","Git"];
-const key="pintmen_v3_data";
-let data=JSON.parse(localStorage.getItem(key)||'{"edits":{},"gigs":{}}'), tab="calendar", view=new Date(2026,9,1), editKey=null;
-
+let data={edits:{},gigs:{}};
+let tab="calendar",view=new Date(2026,9,1),currentUser=null,channel=null;
 function k(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-function save(){localStorage.setItem(key,JSON.stringify(data))}
 function rosterFor(d){const diff=Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(2026,9,1))/86400000);return rosterCycle[((diff%28)+28)%28]}
-function aCStatus(w,d){
- const p=rosterFor(d), base=p.includes(w)?(p[1]===w?"NIGHT":"DAY"):"OFF", e=data.edits[k(d)]?.[w];
- if(e==="leave")return "LEAVE"; if(e==="available")return "AVAILABLE"; if(e==="night")return "NIGHT"; return base;
-}
-function freeAfter6(s){return s!=="NIGHT" && s!=="LEAVE"}
-function statusShort(s){
- if(s==="DAY")return "DAY";
- if(s==="NIGHT")return "NIGHT";
- if(s==="LEAVE")return "OFF/LEAVE";
- if(s==="AVAILABLE")return "FREE";
- return "OFF";
-}
-function nextMorningHtml(date){
- const d=new Date(date+"T12:00:00");
- d.setDate(d.getDate()+1);
- const dayName=d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"});
- const a=aCStatus("A",d), c=aCStatus("C",d);
- const cls=x=>x==="DAY"||x==="NIGHT"?"work":"";
- return `<div class="nextmorning"><strong>☀️ Next morning — ${dayName}</strong><br>A: <span class="${cls(a)}">${statusShort(a)}</span> &nbsp; • &nbsp; C: <span class="${cls(c)}">${statusShort(c)}</span></div>`;
-}
-function gigable(d){const wd=d.getDay(); if(wd!==5&&wd!==6)return false; return freeAfter6(aCStatus("A",d))&&freeAfter6(aCStatus("C",d))}
+function aCStatus(w,d){const p=rosterFor(d),base=p.includes(w)?(p[1]===w?"NIGHT":"DAY"):"OFF",e=data.edits[k(d)]?.[w];if(e==="leave")return "LEAVE";if(e==="available")return "AVAILABLE";if(e==="night")return "NIGHT";return base}
+function freeAfter6(s){return s!=="NIGHT"&&s!=="LEAVE"}
+function statusShort(s){if(s==="DAY")return "DAY";if(s==="NIGHT")return "NIGHT";if(s==="LEAVE")return "OFF/LEAVE";if(s==="AVAILABLE")return "FREE";return "OFF"}
+function nextMorningHtml(date){const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+1);const dayName=d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"}),a=aCStatus("A",d),c=aCStatus("C",d),cls=x=>x==="DAY"||x==="NIGHT"?"work":"";return `<div class="nextmorning"><strong>☀️ Next morning — ${dayName}</strong><br>A: <span class="${cls(a)}">${statusShort(a)}</span> &nbsp; • &nbsp; C: <span class="${cls(c)}">${statusShort(c)}</span></div>`}
+function gigable(d){const wd=d.getDay();if(wd!==5&&wd!==6)return false;return freeAfter6(aCStatus("A",d))&&freeAfter6(aCStatus("C",d))}
 function escape(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function render(){
- const c=document.getElementById("content");
- if(tab==="calendar")renderCalendar(c); else if(tab==="gigs")renderGigs(c); else renderAvailability(c);
- document.querySelectorAll("[data-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.tab===tab);b.onclick=()=>{tab=b.dataset.tab;render()}});
-}
-function renderCalendar(c){
- const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;
- let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday are highlighted when A Watch + C Watch are both free after 18:00.</small></div></div><section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;
- for(let i=0;i<total;i++){
-  let n=i-start+1;
-  if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}
-  const d=new Date(y,m,n), keyd=k(d), gig=data.gigs[keyd], weekend=d.getDay()===5||d.getDay()===6;
-  const a=aCStatus("A",d), cc=aCStatus("C",d), potential=gigable(d);
-  s+=`<div class="day ${weekend?"weekend":""} ${potential?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')">
-   <div class="num">${n}</div>
-   <div class="shiftlines"><div class="shiftline"><b>A:</b> <span class="${a==="NIGHT"?"night":a==="OFF"||a==="AVAILABLE"?"off":""}">${statusShort(a)}</span></div>
-   <div class="shiftline"><b>C:</b> <span class="${cc==="NIGHT"?"night":cc==="OFF"||cc==="AVAILABLE"?"off":""}">${statusShort(cc)}</span></div></div>
-   ${gig?'<span class="gigtag">GIG ADDED</span>':""}
-  </div>`;
- }
- s+=`</div></div><div class="legend"><span>Green highlight = potential gig night</span><span>A + C shifts shown on every date</span><span>Gold = gig added</span></div></section>`;
- const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);
- if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🍺 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}
- c.innerHTML=s;
-}
+function setSyncStatus(t,ok=false){const el=document.getElementById("syncStatus");if(el){el.textContent=t;el.style.color=ok?"#8fe7ad":"#8d9b91"}}
+function render(){const c=document.getElementById("content");if(tab==="calendar")renderCalendar(c);else if(tab==="gigs")renderGigs(c);else renderAvailability(c);document.querySelectorAll("[data-tab]").forEach(b=>{b.classList.toggle("active",b.dataset.tab===tab);b.onclick=()=>{tab=b.dataset.tab;render()}})}
+function renderCalendar(c){const y=view.getFullYear(),m=view.getMonth(),first=new Date(y,m,1),last=new Date(y,m+1,0),start=first.getDay(),total=Math.ceil((start+last.getDate())/7)*7;let s=`<div class="focus"><div class="ball">🍺</div><div><b>Potential gig nights</b><small>Friday & Saturday are highlighted when A Watch + C Watch are both free after 18:00.</small></div></div><section class="card"><div class="cardhead"><h2>${view.toLocaleDateString("en-IE",{month:"long",year:"numeric"})}</h2><div class="monthnav"><button onclick="move(-1)">‹</button><button onclick="move(1)">›</button></div></div><div class="cal"><div class="dow">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>`<div>${x}</div>`).join("")}</div><div class="days">`;for(let i=0;i<total;i++){let n=i-start+1;if(n<1||n>last.getDate()){s+=`<div class="day muted"></div>`;continue}const d=new Date(y,m,n),keyd=k(d),gig=data.gigs[keyd],weekend=d.getDay()===5||d.getDay()===6,a=aCStatus("A",d),cc=aCStatus("C",d),potential=gigable(d);s+=`<div class="day ${weekend?"weekend":""} ${potential?"gigable":""} ${gig?"hasgig":""}" onclick="openDate('${keyd}')"><div class="num">${n}</div><div class="shiftlines"><div class="shiftline"><b>A:</b> <span class="${a==="NIGHT"?"night":a==="OFF"||a==="AVAILABLE"?"off":""}">${statusShort(a)}</span></div><div class="shiftline"><b>C:</b> <span class="${cc==="NIGHT"?"night":cc==="OFF"||cc==="AVAILABLE"?"off":""}">${statusShort(cc)}</span></div></div>${gig?'<span class="gigtag">GIG ADDED</span>':""}</div>`}s+=`</div></div><div class="legend"><span>Green highlight = potential gig night</span><span>A + C shifts shown on every date</span><span>Gold = gig added</span></div></section>`;const upcoming=Object.entries(data.gigs).filter(([date])=>date>=k(new Date())).sort().slice(0,3);if(upcoming.length){s+=`<section class="card"><div class="cardhead"><h2>🍺 Upcoming Pintmen nights</h2></div>`;for(const [date,g] of upcoming)s+=gigMini(date,g);s+=`</section>`}c.innerHTML=s}
 function gigMini(date,g){const d=new Date(date+"T12:00:00");return `<div class="gigcard"><div class="gighero"><img src="./pintmen-band.jpg"><div class="gtext"><span class="pill">GIG / SESSION</span><h3>${escape(g.name||"Pintmen night")}</h3></div></div><div class="meta"><div><b>${d.toLocaleDateString("en-IE",{weekday:"short",day:"numeric",month:"short"})}</b>${escape(g.time||"Time TBC")}</div><div><b>Venue</b>${escape(g.venue||"Venue TBC")}</div></div></div>`}
 function renderGigs(c){let entries=Object.entries(data.gigs).sort();let s=`<section class="card"><div class="cardhead"><h2>🎻 The Pintmen gigs</h2><button class="iconbtn" onclick="openNew('gig')">+</button></div>`;if(!entries.length)s+=`<div class="list"><div class="sub">No gigs added yet. Tap + to add the first one.</div></div>`;else entries.forEach(([d,g])=>s+=gigMini(d,g));s+=`</section>`;c.innerHTML=s}
-function renderAvailability(c){
- let d=new Date(); let rows="";
- for(const m of members){let status=m==="Doyle"||m==="Derwin"? "Roster-linked":"Available to set"; rows+=`<div class="member"><div class="face">${m[0]}</div><div class="mname">${m}</div><span class="status partial">${status}</span></div>`}
- c.innerHTML=`<section class="card"><div class="cardhead"><h2>👥 The Pintmen</h2></div><div class="list">${rows}</div></section>
- <section class="card"><div class="cardhead"><h2>How availability works</h2></div><div class="list"><div class="sub">A/C use the existing 28-day watch roster. Everyone else can have leave or availability added to specific dates. Friday and Saturday after 18:00 are the priority gig window.</div></div></section>`;
-}
+function renderAvailability(c){let rows="";for(const m of members){const dates=Object.entries(data.edits).filter(([d,v])=>v?.[m]).sort().slice(-3);const latest=dates.length?dates.map(([d,v])=>`${d}: ${v[m]}`).join(" • "):"No shared changes";rows+=`<div class="member"><div class="face">${m[0]}</div><div class="mname">${m}<div class="sub">${latest}</div></div><span class="status partial">Set dates</span></div>`}c.innerHTML=`<section class="card"><div class="cardhead"><h2>👥 The Pintmen</h2><button class="iconbtn" onclick="openNew(\"leave\")">+</button></div><div class="list">${rows}</div></section><section class="card"><div class="cardhead"><h2>Shared availability</h2></div><div class="list"><div class="sub">Add leave or mark a member available for a specific date. These changes are shared with everyone signed in.</div></div></section>`}
 function move(n){view.setMonth(view.getMonth()+n);render()}
-function openDate(date){
- const g=data.gigs[date]; if(g){openGig(date);return}
- openNew("gig",date)
-}
+function openDate(date){const g=data.gigs[date];if(g){openGig(date);return}openNew("gig",date)}
 function openGig(date){openNew("gig",date)}
-function openNew(type,date){
- editKey=null;const chosen=date||k(view);
- document.getElementById("modalTitle").textContent=type==="gig"?"Add Pintmen gig":"Add availability";
- document.getElementById("date").value=chosen;document.getElementById("type").value=type;
- document.getElementById("gigName").value=data.gigs[chosen]?.name||"";
- document.getElementById("venue").value=data.gigs[chosen]?.venue||"";
- document.getElementById("time").value=data.gigs[chosen]?.time||"";
- document.getElementById("notes").value=data.gigs[chosen]?.notes||"";
- let nm=document.getElementById("nextMorningInfo");
- if(!nm){nm=document.createElement("div");nm.id="nextMorningInfo";document.querySelector("#form .hint").after(nm)}
- nm.innerHTML=nextMorningHtml(chosen);
- document.getElementById("modal").classList.add("open")
-}
-document.getElementById("form").onsubmit=e=>{e.preventDefault();const date=document.getElementById("date").value,type=document.getElementById("type").value;if(!date)return;
- if(type==="gig"){data.gigs[date]={name:document.getElementById("gigName").value.trim(),venue:document.getElementById("venue").value.trim(),time:document.getElementById("time").value.trim(),notes:document.getElementById("notes").value.trim()}}
- else {data.edits[date]=data.edits[date]||{};data.edits[date][document.getElementById("member").value]=type==="leave"?"leave":"available"}
- save();document.getElementById("modal").classList.remove("open");toast();render()}
+function openNew(type,date){const chosen=date||k(view);const isGig=type==="gig";document.getElementById("modalTitle").textContent=isGig?"Add Pintmen gig":"Add availability";document.getElementById("date").value=chosen;document.getElementById("type").value=isGig?"gig":(type==="available"?"available":"leave");document.getElementById("member").value=currentUser?.user_metadata?.member||members[0];document.getElementById("gigName").value=isGig?(data.gigs[chosen]?.name||""):"";document.getElementById("venue").value=isGig?(data.gigs[chosen]?.venue||""):"";document.getElementById("time").value=isGig?(data.gigs[chosen]?.time||""):"";document.getElementById("notes").value=isGig?(data.gigs[chosen]?.notes||""):"";document.getElementById("gigName").closest(".row").style.display=isGig?"grid":"none";document.getElementById("venue").closest(".row").style.display=isGig?"grid":"none";document.getElementById("notes").style.display=isGig?"block":"none";let nm=document.getElementById("nextMorningInfo");if(!nm){nm=document.createElement("div");nm.id="nextMorningInfo";document.querySelector("#form .hint").after(nm)}nm.innerHTML=nextMorningHtml(chosen);document.getElementById("modal").classList.add("open")}
+async function loadData(){if(!currentUser)return;setSyncStatus("Loading shared calendar…");const [g,a]=await Promise.all([db.from("Gigs").select("*").order("gig_date"),db.from("availability").select("*")]);if(g.error){console.error(g.error);setSyncStatus("Shared calendar error");toast("Gigs could not be loaded")};if(a.error){console.error(a.error);setSyncStatus("Shared calendar needs setup");}data={edits:{},gigs:{}};(g.data||[]).forEach(r=>{data.gigs[r.gig_date]={id:r.id,name:r.gig_name||"",venue:r.venue||"",time:r.gig_time||"",notes:r.notes||"",addedBy:r.added_by||""}});(a.data||[]).forEach(r=>{data.edits[r.date]=data.edits[r.date]||{};data.edits[r.date][r.member]=r.status});setSyncStatus("Shared • synced",true);render()}
+async function saveGig(date){const payload={gig_date:date,gig_name:document.getElementById("gigName").value.trim(),venue:document.getElementById("venue").value.trim(),gig_time:document.getElementById("time").value.trim(),notes:document.getElementById("notes").value.trim(),added_by:currentUser?.email||""};const existing=data.gigs[date];let res;if(existing?.id)res=await db.from("Gigs").update(payload).eq("id",existing.id);else res=await db.from("Gigs").insert(payload);if(res.error){console.error(res.error);toast("Could not save — check Supabase setup");return false}return true}
+async function saveAvailability(date,member,status){const res=await db.from("availability").upsert({date,member,status},{onConflict:"date,member"});if(res.error){console.error(res.error);toast("Could not save availability");return false}return true}
+document.getElementById("form").onsubmit=async e=>{e.preventDefault();const date=document.getElementById("date").value,type=document.getElementById("type").value;if(!date)return;const ok=type==="gig"?await saveGig(date):await saveAvailability(date,document.getElementById("member").value,type==="leave"?"leave":"available");if(ok){document.getElementById("modal").classList.remove("open");toast("Shared & saved");await loadData()}}
 document.getElementById("cancel").onclick=()=>document.getElementById("modal").classList.remove("open");
-document.getElementById("clear").onclick=()=>{const date=document.getElementById("date").value;if(data.gigs[date])delete data.gigs[date];save();document.getElementById("modal").classList.remove("open");render()};
+document.getElementById("clear").onclick=async()=>{const date=document.getElementById("date").value,g=data.gigs[date];if(g?.id){const res=await db.from("Gigs").delete().eq("id",g.id);if(res.error){toast("Could not delete");return}}document.getElementById("modal").classList.remove("open");toast("Removed");await loadData()};
 document.getElementById("add").onclick=()=>openNew("gig");
-document.getElementById("more").onclick=()=>toast("The Pintmen • shared sync ready for backend connection");
-document.getElementById("settings").onclick=()=>toast("Shared sync can be enabled with Supabase");
-function toast(msg="Saved"){const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";setTimeout(()=>t.style.display="none",1800)}
+document.getElementById("more").onclick=()=>toast("The Pintmen • shared calendar");
+document.getElementById("settings").onclick=()=>toast(currentUser?`Signed in as ${currentUser.email}`:"Not signed in");
+document.getElementById("logout").onclick=async()=>{await db.auth.signOut()};
+document.getElementById("authForm").onsubmit=async e=>{e.preventDefault();const err=document.getElementById("authError");err.style.display="none";const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;const {error}=await db.auth.signInWithPassword({email,password});if(error){err.textContent=error.message;err.style.display="block"}};
+function showApp(){document.getElementById("authModal").classList.remove("open");document.getElementById("logout").style.display="block"}
+function showLogin(){document.getElementById("authModal").classList.add("open");document.getElementById("logout").style.display="none";setSyncStatus("Sign in required")}
+db.auth.onAuthStateChange(async(_event,session)=>{currentUser=session?.user||null;if(currentUser){showApp();await loadData();if(channel)await db.removeChannel(channel);channel=db.channel("pintmen-shared").on("postgres_changes",{event:"*",schema:"public",table:"Gigs"},()=>loadData()).on("postgres_changes",{event:"*",schema:"public",table:"availability"},()=>loadData()).subscribe()}else{data={edits:{},gigs:{}};render();showLogin()}});
 render();
 </script>
 </body>

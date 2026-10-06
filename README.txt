@@ -1,19 +1,7 @@
-THE PINTMEN — GITHUB UPLOAD
+THE PINTMEN — SHARED APP
 
-Upload these seven files directly into the ROOT of the repository:
-- index.html
-- manifest.webmanifest
-- sw.js
-- pintmen-band.jpg
-- icon-192.png
-- icon-512.png
+This package is the GitHub Pages website build connected to the existing Supabase project.
 
-No folders are required.
+Do not run the SQL setup again; the Supabase database, RLS policies and Realtime tables have already been configured.
 
-Important:
-- Friday/Saturday evenings where A + C are both free are highlighted as AVAILABLE.
-- They are NOT labelled as a gig.
-- Only a date with an actual gig added shows GIG/gold gig markers.
-
-After uploading, GitHub Pages:
-Settings → Pages → Deploy from a branch → main → /(root) → Save.
+Upload the contents of this folder to the root of the Doyle-Derwin-Gig repository, replacing the existing website files.
